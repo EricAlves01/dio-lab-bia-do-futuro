@@ -4,12 +4,12 @@
 
 Descreva se usou os arquivos da pasta `data`, por exemplo:
 
-| Arquivo | Formato | Utilização no Agente |
+| Arquivo | Formato | Para que serve o Edu |
 |---------|---------|---------------------|
-| `historico_atendimento.csv` | CSV | Contextualizar interações anteriores |
-| `perfil_investidor.json` | JSON | Personalizar recomendações |
-| `produtos_financeiros.json` | JSON | Sugerir produtos adequados ao perfil |
-| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente |
+| `historico_atendimento.csv` | CSV | Contextualizar interações anteriores, dar continuidade ao atendimento de forma mais eficiente |
+| `perfil_investidor.json` | JSON | Personalizar as explicações  sobre as duvidas e mensalidades do clientes |
+| `produtos_financeiros.json` | JSON | Conhecer os Produtos disponíveis para que eles possam ser analisados pelos usuários e futuramente aplicados |
+| `transacoes.csv` | CSV | Analisar padrão de gastos do cliente e usar essas informações de forma didática |
 
 > [!TIP]
 > **Quer um dataset mais robusto?** Você pode utilizar datasets públicos do [Hugging Face](https://huggingface.co/datasets) relacionados a finanças, desde que sejam adequados ao contexto do desafio.
@@ -20,7 +20,7 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 
 > Você modificou ou expandiu os dados mockados? Descreva aqui.
 
-[Sua descrição aqui]
+Não , nenhuma alteração foi realizada.
 
 ---
 
@@ -29,18 +29,108 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 ### Como os dados são carregados?
 > Descreva como seu agente acessa a base de conhecimento.
 
-[ex: Os JSON/CSV são carregados no início da sessão e incluídos no contexto do prompt]
+- Importação via código.
+- injetar os dados diretamente no prompt (Crtl +C  Crtl + V)
 
 ### Como os dados são usados no prompt?
 > Os dados vão no system prompt? São consultados dinamicamente?
 
-[Sua descrição aqui]
+para simplificar , injetamos  os dados no prompt em formato json , garantindo que o agente tenha melhor contexto possivel, lembrando que , em soluções mais robustas o ideal é que essas informações sejam carregadas dinamicamente para que possamos ganhar flexibilidade.
 
+```text
+dados do cliente:
+{
+  "nome": "João Silva",
+  "idade": 32,
+  "profissao": "Analista de Sistemas",
+  "renda_mensal": 5000.00,
+  "perfil_investidor": "moderado",
+  "objetivo_principal": "Construir reserva de emergência",
+  "patrimonio_total": 15000.00,
+  "reserva_emergencia_atual": 10000.00,
+  "aceita_risco": false,
+  "metas": [
+    {
+      "meta": "Completar reserva de emergência",
+      "valor_necessario": 15000.00,
+      "prazo": "2026-06"
+    },
+    {
+      "meta": "Entrada do apartamento",
+      "valor_necessario": 50000.00,
+      "prazo": "2027-12"
+    }
+  ]
+}
+
+historico de atendimento do cliente:
+
+transações do cliente:
+data,descricao,categoria,valor,tipo
+2025-10-01,Salário,receita,5000.00,entrada
+2025-10-02,Aluguel,moradia,1200.00,saida
+2025-10-03,Supermercado,alimentacao,450.00,saida
+2025-10-05,Netflix,lazer,55.90,saida
+2025-10-07,Farmácia,saude,89.00,saida
+2025-10-10,Restaurante,alimentacao,120.00,saida
+2025-10-12,Uber,transporte,45.00,saida
+2025-10-15,Conta de Luz,moradia,180.00,saida
+2025-10-20,Academia,saude,99.00,saida
+2025-10-25,Combustível,transporte,250.00,saida
+
+
+Produtos disponíveis para ensino:
+[
+  {
+    "nome": "Tesouro Selic",
+    "categoria": "renda_fixa",
+    "risco": "baixo",
+    "rentabilidade": "100% da Selic",
+    "aporte_minimo": 30.00,
+    "indicado_para": "Reserva de emergência e iniciantes"
+  },
+  {
+    "nome": "CDB Liquidez Diária",
+    "categoria": "renda_fixa",
+    "risco": "baixo",
+    "rentabilidade": "102% do CDI",
+    "aporte_minimo": 100.00,
+    "indicado_para": "Quem busca segurança com rendimento diário"
+  },
+  {
+    "nome": "LCI/LCA",
+    "categoria": "renda_fixa",
+    "risco": "baixo",
+    "rentabilidade": "95% do CDI",
+    "aporte_minimo": 1000.00,
+    "indicado_para": "Quem pode esperar 90 dias (isento de IR)"
+  },
+  {
+    "nome": "Fundo Multimercado",
+    "categoria": "fundo",
+    "risco": "medio",
+    "rentabilidade": "CDI + 2%",
+    "aporte_minimo": 500.00,
+    "indicado_para": "Perfil moderado que busca diversificação"
+  },
+  {
+    "nome": "Fundo de Ações",
+    "categoria": "fundo",
+    "risco": "alto",
+    "rentabilidade": "Variável",
+    "aporte_minimo": 100.00,
+    "indicado_para": "Perfil arrojado com foco no longo prazo"
+  }
+]
+'''
+```
 ---
 
 ## Exemplo de Contexto Montado
 
 > Mostre um exemplo de como os dados são formatados para o agente.
+
+O exemplo de contexto montado abaixo, se baseia nos dados originais da base de conhecimento , mais os sintetiza deixando apenas as informações mais relevantes otimizando o consumo de tokens.
 
 ```
 Dados do Cliente:
